@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Buat Subdomain Cloudflare — Ramzz Hosting</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: url('https://files.catbox.moe/qdqyco.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #e0e7ff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  main {
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 16px;
+    padding: 30px 40px;
+    width: 480px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-sizing: border-box;
+  }
+
+  h1 {
+    text-align: center;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 25px;
+  }
+
+  label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  select,
+  input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.07);
+    color: #ddf9ff;
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+    transition: background 0.3s ease;
+  }
+
+  select:focus,
+  input[type="text"]:focus,
+  select:hover,
+  input[type="text"]:hover {
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+  }
+
+  button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #00fff7, #008080);
+    color: #001f20;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+    margin-top: 10px;
+  }
+
+  button:hover {
+    background: linear-gradient(135deg, #00d1ca, #004f4f);
+    color: #e0ffff;
+  }
+
+  #results {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 14px;
+    color: #a0f0ff;
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Buat Subdomain Cloudflare</h1>
+  <form id="formSubdomain" autocomplete="off">
+    <label for="domain">Pilih Domain:</label>
+    <select id="domain" required>
+      <option value="" disabled selected>-- Pilih Domain --</option>
+        <option value="indictive.my.id">indictive.my.id</option>
+        <option value="cmmzx.my.id">cmmzx.my.id</option>
+        <option value="mypanelstore.web.id">mypanelstore.web.id</option>
+        <option value="privatserver.my.id">privatserver.my.id</option>
+        <option value="serverku.biz.id">serverku.biz.id</option>
+        <option value="trbruvrl.my.id">trbruvrl.my.id</option>
+        <option value="cx0nnj.biz.id">cx0nnj.biz.id</option>
+        <option value="cl1ck-web.biz.id">cl1ck-web.biz.id</option>
+        <option value="web-viralltrbru.web.id">web-viralltrbru.web.id</option>
+      </select>
+
+    <label for="ip">IP Address:</label>
+    <input type="text" id="ip" placeholder="Misal: 192.168.1.1" required />
+
+    <label for="type">Tipe DNS Record:</label>
+    <select id="type" required>
+      <option value="A" selected>A</option>
+      <option value="AAAA">AAAA</option>
+      <option value="CNAME">CNAME</option>
+      <option value="TXT">TXT</option>
+    </select>
+
+    <label for="subdomain">Subdomain:</label>
+    <input type="text" id="subdomain" placeholder="Misal: blog" required />
+    
+    <label for="proxied">Proxy (Cloudflare CDN)</label>
+    <select id="proxied" required>
+      <option value="true">Aktif (Proxied)</option>
+      <option value="false" selected>Nonaktif (DNS Only)</option>
+    </select>
+
+    <button type="submit">Buat Subdomain</button>
+  </form>
+
+  <pre id="results" aria-live="polite"></pre>
+</main>
+
+<script>
+  async function createSubdomain(subdomain, content, type, zoneid, token, domain, proxied) {
+    const url = `https://apikey.vannhosting.my.id/cloudflare/add-subdomain` +
+      `?subdomain=${encodeURIComponent(subdomain)}` +
+      `&content=${encodeURIComponent(content)}` +
+      `&type=${encodeURIComponent(type)}` +
+      `&zoneid=${encodeURIComponent(zoneid)}` +
+      `&token=${encodeURIComponent(token)}` +
+      `&domain=${encodeURIComponent(domain)}` +
+      `&proxied=${encodeURIComponent(proxied)}`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      return { status: false, message: err.message };
+    }
+  }
+
+  const zones = {
+      'indictive.my.id': {
+        zone_id: '128044de11bc5ee877576bd6249f9b68',
+        token: 'toDwpflb4Klcp6ajGj4CCNL1rkx45gFIuu20-8bv'
+      },
+      'cmmzx.my.id': {
+        zone_id: '2ce01e7dba82f7a6e8ab295f088b464e',
+        token: 'jsBkhpoOeSprNzj6Rr7Zk12ZejR4jGzawrWd0hgu'
+      },
+      'mypanelstore.web.id': {
+        zone_id: 'c61c442d70392500611499c5af816532',
+        token: 'gqg5B6_1UQhb72wg4zS1U7AGNbofMYRXT8zFiKZC'
+      },
+      'privatserver.my.id': {
+        zone_id: '699bb9eb65046a886399c91daacb1968',
+        token: 'KBkS9zIPdG0blhqtPMUjG8z8x8xumauCRuXvY_E1'
+      },
+      'serverku.biz.id': {
+        zone_id: '4e4feaba70b41ed78295d2dcc090dd3a',
+        token: 'b4YP7XhbliFuqgiXnz3gBvrmXfzgxuKQIkXEJjM7'
+      },
+      'trbruvrl.my.id': {
+        zone_id: '9f30b9fb4439d92193742b5c4c02ee65',
+        token: 'HmZpTRjH_-Oohcc74UZxzDqHthmCW8j7waJ7xRv0'
+      },
+      'cx0nnj.biz.id': {
+        zone_id: '0afdb07cc1a76992d494ec5756c7a0af',
+        token: 'HmZpTRjH_-Oohcc74UZxzDqHthmCW8j7waJ7xRv0'
+      },
+      'cl1ck-web.biz.id': {
+        zone_id: 'c8acf5465f5c10773441c188ae4d9f91',
+        token: 'HmZpTRjH_-Oohcc74UZxzDqHthmCW8j7waJ7xRv0'
+      },
+      'web-viralltrbru.web.id': {
+        zone_id: '271fe3d79f299e70b515cfc61a9aea54',
+        token: 'HmZpTRjH_-Oohcc74UZxzDqHthmCW8j7waJ7xRv0'
+      }
+    };
+
+  document.getElementById('formSubdomain').addEventListener('submit', async e => {
+    e.preventDefault();
+    const domain = document.getElementById('domain').value;
+    const content = document.getElementById('ip').value.trim();
+    const type = document.getElementById('type').value;
+    const subdomain = document.getElementById('subdomain').value.trim();
+    const proxied = document.getElementById('proxied').value;
+
+    if (!domain || !content || !type || !subdomain) {
+      alert('Isi semua form dengan benar!');
+      return;
+    }
+
+    if (!(domain in zones)) {
+      alert('Domain tidak tersedia di daftar zone.');
+      return;
+    }
+
+    const { zone_id, token } = zones[domain];
+    const results = document.getElementById('results');
+    results.textContent = 'Sedang memproses...';
+
+    const res = await createSubdomain(subdomain, content, type, zone_id, token, domain, proxied);
+
+    if (res.status === true) {
+  const fullDomain = res.subdomain || `${subdomain}.${domain}`;
+  const createdOn = res.result?.created_on ? new Date(res.result.created_on).toLocaleString('id-ID') : 'Tanggal tidak tersedia';
+  const ipAddr = res.result?.content || content;
+
+  results.textContent = 
+    `✔️ Status: Berhasil\n` +
+    `🌐 Subdomain: ${fullDomain}\n` +
+    `📌 IP: ${ipAddr}\n` +
+    `📅 Dibuat pada: ${createdOn}`;
+} else {
+  results.textContent = `❌ Gagal membuat subdomain:\n\n${res.message || JSON.stringify(res)}`;
+}
+  });
+</script>
+</body>
+</html>
